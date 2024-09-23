@@ -1,0 +1,42 @@
+.register {
+    width: 500px;
+}
+
+.form {
+    width: 500px;
+    display: table;
+}
+
+.row {
+    display: table-row;
+}
+
+.label {
+    width: 300px;
+    display: table-cell;
+    text-align: right;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.input {
+    display: table-cell;
+}
+
+.register_button {
+    width: 100%;
+}
+
+.in{
+    width: 200px;
+    color: black;
+}
+
+.error {
+    background-color: red;
+}
+
+.back {
+    text-align: right;
+    padding-top: 10px;
+}

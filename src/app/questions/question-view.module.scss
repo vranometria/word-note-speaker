@@ -1,0 +1,27 @@
+@keyframes speaker-vibrate {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.05) rotate(-2deg); }
+    50% { transform: scale(1) rotate(0deg); }
+    75% { transform: scale(1.05) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* 点滅アニメーションの定義 */
+@keyframes blink {
+    0% {
+      filter: brightness(1);
+    }
+    50% {
+      filter: brightness(2) sepia(1) hue-rotate(50deg); /* 黄色にする */
+    }
+    100% {
+      filter: brightness(1);
+    }
+  }
+  
+  
+/* 音が鳴っているときに適用するアニメーション */
+.speaking {
+    animation: speaker-vibrate 0.2s infinite;
+    animation: blink 0.5s infinite; /* 0.5秒ごとに点滅を繰り返す */
+}

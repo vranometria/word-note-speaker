@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "paths": {
+    "/tags": {
+      "name": "/tags",
+      "lambdaFunction": "tag",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

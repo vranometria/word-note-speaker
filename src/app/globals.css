@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.hide {
+  visibility: hidden;
+}
+
+.page-title {
+  padding-bottom: 20px;
+  width: 100%;
+  text-align: center;
+}
+
+.tag-container {
+  display: flex;
+  width: 500px;
+  height: auto;
+}
+
+.page-root {
+  /* Grid layout with specific row heights */
+  display: grid;
+  grid-template-rows: 20px 1fr 20px; /* grid-rows-[20px_1fr_20px] */
+
+  /* Align items and justify content within the grid */
+  align-items: center; /* items-center */
+  justify-items: center; /* justify-items-center */
+
+  /* Minimum height of the screen */
+  min-height: 100vh; /* min-h-screen */
+
+  /* Padding */
+  padding: 2rem; /* p-8, equivalent to 32px */
+  padding-bottom: 5rem; /* pb-20, equivalent to 80px */
+  gap: 4rem; /* gap-16, equivalent to 64px */
+
+  /* Responsive padding */
+  @media (min-width: 640px) {
+    padding: 5rem; /* sm:p-20, equivalent to 80px */
+  }
+
+  /* Font family using CSS variables */
+  font-family: var(--font-geist-sans); /* font-[family-name:var(--font-geist-sans)] */
+}
+
+.contents {
+  /* Flexbox layout with column direction */
+  display: flex;
+  flex-direction: column; /* flex-col */
+  
+  /* Gap between items */
+  gap: 2rem; /* gap-8, equivalent to 32px */
+
+  /* Grid positioning (if inside a grid) */
+  grid-row-start: 2; /* row-start-2 */
+
+  /* Alignment */
+  align-items: center; /* items-center */
+
+  /* Responsive alignment */
+  @media (min-width: 640px) {
+    align-items: flex-start; /* sm:items-start */
+  }
+}
+
+.common-button {
+  /* Border radius, border, and border color */
+  border-radius: 9999px; /* equivalent to rounded-full */
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.08); /* border-black/[.08] */
+  
+  /* Dark mode border color */
+  @media (prefers-color-scheme: dark) {
+    border-color: rgba(255, 255, 255, 0.145); /* dark:border-white/[.145] */
+  }
+
+  /* Transition for color changes */
+  transition-property: color, background-color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
+
+  /* Flexbox alignment */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Hover effects */
+  &:hover {
+    background-color: #f2f2f2; /* hover:bg-[#f2f2f2] */
+    border-color: transparent; /* hover:border-transparent */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:hover {
+      background-color: #1a1a1a; /* dark:hover:bg-[#1a1a1a] */
+    }
+  }
+
+  /* Text size */
+  font-size: 0.875rem; /* text-sm, equivalent to 14px */
+
+  @media (min-width: 640px) {
+    font-size: 1rem; /* sm:text-base, equivalent to 16px */
+  }
+
+  /* Height */
+  height: 2.5rem; /* h-10, equivalent to 40px */
+
+  @media (min-width: 640px) {
+    height: 3rem; /* sm:h-12, equivalent to 48px */
+  }
+
+  /* Padding */
+  padding-left: 1rem; /* px-4, equivalent to 16px */
+  padding-right: 1rem;
+
+  @media (min-width: 640px) {
+    padding-left: 1.25rem; /* sm:px-5, equivalent to 20px */
+    padding-right: 1.25rem;
+  }
+
+  /* Minimum width */
+  @media (min-width: 640px) {
+    min-width: 11rem; /* sm:min-w-44, equivalent to 176px */
+  }
+}
+
+.back {
+  width: 100%;
+  text-align: right;
+  margin-top: 50px;
+}

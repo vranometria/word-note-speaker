@@ -1,0 +1,35 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-wordnotespeaker-dev-bb0b6-authRole",
+      "UnauthRoleArn": "arn:aws:iam::981083441268:role/amplify-wordnotespeaker-dev-bb0b6-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::981083441268:role/amplify-wordnotespeaker-dev-bb0b6-authRole",
+      "Region": "ap-northeast-1",
+      "DeploymentBucketName": "amplify-wordnotespeaker-dev-bb0b6-deployment",
+      "UnauthRoleName": "amplify-wordnotespeaker-dev-bb0b6-unauthRole",
+      "StackName": "amplify-wordnotespeaker-dev-bb0b6",
+      "StackId": "arn:aws:cloudformation:ap-northeast-1:981083441268:stack/amplify-wordnotespeaker-dev-bb0b6/0835c860-7731-11ef-90cf-0aa27a695c69",
+      "AmplifyAppId": "d21xhgs2i2sczb",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-wordnotespeaker-dev-bb0b6-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "auth": {
+        "wordnotespeaker891603ae": {}
+      },
+      "function": {
+        "question": {
+          "deploymentBucketName": "amplify-wordnotespeaker-dev-bb0b6-deployment",
+          "s3Key": "amplify-builds/question-3967757a644d7330395a-build.zip"
+        },
+        "tag": {
+          "deploymentBucketName": "amplify-wordnotespeaker-dev-bb0b6-deployment",
+          "s3Key": "amplify-builds/tag-71647455762f726c4462-build.zip"
+        }
+      },
+      "api": {
+        "words": {},
+        "tag": {}
+      }
+    }
+  }
+}

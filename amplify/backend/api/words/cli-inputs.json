@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "paths": {
+    "/questions": {
+      "name": "/questions",
+      "lambdaFunction": "question",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    },
+    "/tags": {
+      "name": "/tags",
+      "lambdaFunction": "tag",
+      "permissions": {
+        "setting": "private",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ]
+      }
+    }
+  }
+}

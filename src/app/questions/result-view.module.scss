@@ -1,0 +1,21 @@
+.result {
+    width: 1000px;
+    border: 1px solid white;
+
+    td, th {
+        border: 1px solid white;
+        text-align: center;
+    }
+
+    td {
+        height: 40px;
+        min-width: 200px;
+    }
+
+    th {
+        background-color: white;
+        color: black;
+        opacity: 0.65;
+        height: 50px;
+    }
+}

@@ -1,0 +1,9 @@
+.tag-name{
+    color: black;
+    height: auto;
+    margin-right: 20px;
+}
+
+.error{
+    background-color: red;
+}
