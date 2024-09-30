@@ -39,7 +39,7 @@ services:
       - ./amplify/backend/function/question/src/:/var/task
     environment:
       <<: *constants
-      TABLE_NAME: "questions"
+      TABLE_NAME: "words"
     command: "index.handler"
     networks:
       - lambda-network

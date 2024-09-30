@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 import TagView from "../parts/tag-view";
 import Tag from "../types/tag";
 import { bindClasses } from "../util";
-import { fetchTags, registerQuestion } from "../apis";
+import { fetchTags, Api } from "../apis";
 
 /**
  * 問題登録画面
@@ -51,7 +51,7 @@ export default function Register() {
             }
             const isNoError = !isEnglishError && !isJapaneseError;
             if(isNoError){
-                const promise = registerQuestion(english, japanese, tagIds);
+                const promise = Api.registerQuestion(english, japanese, tagIds);
                 toast.promise(
                     promise,
                     {

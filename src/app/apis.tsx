@@ -92,41 +92,6 @@ export async function deleteTag(id: string): Promise<boolean>{
     }
 }
 
-
-/**
- * 問題登録
- * @param english 英語
- * @param japanese 正解の日本語
- * @param tags 問題二関連するタグ
- */
-export async function registerQuestion(english: string, japanese: string, tags: string[]): Promise<boolean>{ 
-    try {
-        const operation = put({
-            apiName: 'words',
-            path: '/questions',
-            options: {
-                body: {
-                    english: english,
-                    japanese: japanese,
-                    tags: tags,
-                }
-            }
-        });
-        const response = await operation.response;
-    
-        if(response.statusCode === 200){
-            return true;
-        } else {
-            alert("Failed to register");
-            return false;
-        }
-    }
-    catch(e) { 
-        error(e);
-        return false;
-    };
-}
-
 /**
  * 問題を検索する
  * @param condition 
@@ -212,3 +177,88 @@ export async function patchScore(answers: IAnswer[]): Promise<Result[]> {
     };
     return results;
 }
+
+export interface IApi {
+    registerQuestion: (english: string, japanese: string, tags: string[]) => Promise<boolean>;
+}
+
+abstract class AbstractApi implements IApi {
+    abstract registerQuestion: (english: string, japanese: string, tags: string[]) => Promise<boolean>;
+    
+    getRegisterQuestionBody = (english: string, japanese: string, tags: string[]) => {
+        return {
+            english: english,
+            japanese: japanese,
+            tags: tags,
+        }
+    }
+}
+
+
+class ProductionApi extends AbstractApi {
+    /**
+     * 問題登録
+     * @param english 英語
+     * @param japanese 正解の日本語
+     * @param tags 問題二関連するタグ
+     */
+    registerQuestion = async (english: string, japanese: string, tags: string[]): Promise<boolean> => { 
+        try {
+            const operation = put({
+                apiName: 'words',
+                path: '/questions',
+                options: { body: this.getRegisterQuestionBody(english, japanese, tags) }
+            });
+            const response = await operation.response;
+        
+            if(response.statusCode === 200){
+                return true;
+            } else {
+                alert("Failed to register");
+                return false;
+            }
+        }
+        catch(e) { 
+            error(e);
+            return false;
+        };
+    }
+}
+
+class DevelopmentApi extends AbstractApi {
+    registerQuestion = async (english: string, japanese: string, tags: string[]): Promise<boolean> =>  {
+        try {
+            const url = `${process.env.NEXT_PUBLIC_QUESTION_ENDPOINT}`;
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(this.getRegisterQuestionBody(english, japanese, tags)),
+            });
+            if(res.status === 200){
+                return true;
+            } else {
+                alert("Failed to register");
+                return false;
+            }
+        }
+        catch(e) { 
+            error(e);
+            return false;
+        };
+    }
+}
+
+let apiClass;
+
+switch (process.env.NODE_ENV) {
+    case 'development':
+        apiClass = new DevelopmentApi();
+    
+    case 'production':
+        apiClass = new ProductionApi();
+
+    default:
+        apiClass = new DevelopmentApi();
+}
+
+export const Api = apiClass;
