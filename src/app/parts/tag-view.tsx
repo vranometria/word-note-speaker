@@ -2,7 +2,7 @@
 // タグボタン
 "use client";
 import { useState } from "react";
-import {Tag} from "../types/tag";
+import Tag from "@/app/types/tag";
 
 interface TagViewProps {
     tag: Tag;
@@ -23,7 +23,7 @@ const TagView: React.FC<TagViewProps> = ({tag, isSelected=false, selected}) => {
     return (
         <div>
             <div>
-                <button onClick={onClick} className={bindClasses(selectClass, "rounded", "w-auto", "text-black", "p-5", "m-1")} >
+                <button onClick={onClick} className={bindClasses(selectClass, "rounded", "w-auto", "text-black", "p-5", "m-1 whitespace-nowrap")} >
                     {tag.label}
                 </button>
             </div>

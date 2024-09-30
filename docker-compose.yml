@@ -1,0 +1,81 @@
+x-common-variables: &constants
+  # ローカルのDynamoDBコンテナを参照先に設定
+  ENDPOINT_URL: http://dynamodb-local:8000
+
+  # 認証情報は値は何でも良いが定義は必須
+  AWS_ACCESS_KEY_ID: "key"
+  AWS_SECRET_ACCESS_KEY: "key"
+  AWS_DEFAULT_REGION: "ap-northeast-1"
+  GEMINI_API_KEY: ${GEMINI_API_KEY}
+
+services:
+
+  # DynamoDBコンテナ
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+    networks:
+      - lambda-network
+
+  # DynamoDBをブラウザから操作する管理コンテナ
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      - DYNAMO_ENDPOINT=http://dynamodb-local:8000
+    networks:
+      - lambda-network
+
+  # LAMBDA関数コンテナ(Question)
+  lambda-question:
+    image: public.ecr.aws/lambda/python:3.12
+    container_name: lambda-question
+    tty: true
+    volumes:
+      - ./amplify/backend/function/question/src/:/var/task
+    environment:
+      <<: *constants
+      TABLE_NAME: "questions"
+    command: "index.handler"
+    networks:
+      - lambda-network
+
+  # LAMBDA関数コンテナ(Tag)
+  lambda-tag:
+    image: public.ecr.aws/lambda/python:3.12
+    container_name: lambda-tag
+    tty: true
+    volumes:
+      - ./amplify/backend/function/tag/src/:/var/task
+    environment:
+      <<: *constants
+      TABLE_NAME: "tags"
+    command: "index.handler"
+    networks:
+      - lambda-network
+
+  # Nginxコンテナ
+  # Lambda関数コンテナがCORSのプリフライトリクエストに対応していないため、プリフライトリクエストはnginxで返答する
+  nginx:
+    image: openresty/openresty:alpine
+    container_name: nginx
+    ports:
+      - "9000:80"
+    volumes:
+      - ./other/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf 
+    environment:
+      - NGINX_HOST=foobar.com
+      - NGINX_PORT=80
+    depends_on:
+      - lambda-question
+      - lambda-tag
+    networks:
+      - lambda-network
+
+networks:
+  lambda-network:
+    driver: bridge

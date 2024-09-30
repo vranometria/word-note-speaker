@@ -15,6 +15,33 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "storagewordsName": {
+      "Type": "String",
+      "Default": "storagewordsName"
+    },
+    "storagewordsArn": {
+      "Type": "String",
+      "Default": "storagewordsArn"
+    },
+    "storagewordsStreamArn": {
+      "Type": "String",
+      "Default": "storagewordsStreamArn"
+    },
+    "storagetagName": {
+      "Type": "String",
+      "Default": "storagetagName"
+    },
+    "storagetagArn": {
+      "Type": "String",
+      "Default": "storagetagArn"
+    },
+    "storagetagStreamArn": {
+      "Type": "String",
+      "Default": "storagetagStreamArn"
+    },
+    "tableName": {
+      "Type": "String"
     }
   },
   "Conditions": {
@@ -69,6 +96,27 @@
             },
             "REGION": {
               "Ref": "AWS::Region"
+            },
+            "STORAGE_WORDS_NAME": {
+              "Ref": "storagewordsName"
+            },
+            "STORAGE_WORDS_ARN": {
+              "Ref": "storagewordsArn"
+            },
+            "STORAGE_WORDS_STREAMARN": {
+              "Ref": "storagewordsStreamArn"
+            },
+            "STORAGE_TAG_NAME": {
+              "Ref": "storagetagName"
+            },
+            "STORAGE_TAG_ARN": {
+              "Ref": "storagetagArn"
+            },
+            "STORAGE_TAG_STREAMARN": {
+              "Ref": "storagetagStreamArn"
+            },
+            "TABLE_NAME": {
+              "Ref": "tableName"
             }
           }
         },
@@ -79,7 +127,9 @@
           ]
         },
         "Runtime": "python3.12",
-        "Layers": [],
+        "Layers": [
+          "arn:aws:lambda:ap-northeast-1:981083441268:layer:google-gemini-python:2"
+        ],
         "Timeout": 25
       }
     },
@@ -160,6 +210,90 @@
                   }
                 ]
               }
+            }
+          ]
+        }
+      }
+    },
+    "AmplifyResourcesPolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:PartiQLSelect"
+              ],
+              "Resource": [
+                {
+                  "Ref": "storagetagArn"
+                },
+                {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      {
+                        "Ref": "storagetagArn"
+                      },
+                      "index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Put*",
+                "dynamodb:Create*",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PartiQLInsert",
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:PartiQLSelect",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*",
+                "dynamodb:PartiQLUpdate",
+                "dynamodb:Delete*",
+                "dynamodb:PartiQLDelete"
+              ],
+              "Resource": [
+                {
+                  "Ref": "storagewordsArn"
+                },
+                {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      {
+                        "Ref": "storagewordsArn"
+                      },
+                      "index/*"
+                    ]
+                  ]
+                }
+              ]
             }
           ]
         }

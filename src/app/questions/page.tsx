@@ -1,13 +1,15 @@
 "use client";
-import { AppContext } from "@/app/AppContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
 import ConditionView from "./condition-view";
-import { Condition } from "@/app/types/condition";
 import QuestionView from "./question-view";
-import Answer from "../types/answer";
 import ResultView from "./result-view";
-import Result from "../types/result";
-import styles from "./page.module.scss";
+
+import { IAnswer } from "../types/interfaces/answer";
+import Result from "@/app/types/result";
+import Question from "@/app/types/question";
+
+import { fetchQuestions, patchScore } from "../apis";
 
 /**
  * 問題収集～結果表示までの現在状態
@@ -23,47 +25,35 @@ enum State {
  * @returns 
  */
 export default function Start() {
-    const context = useContext(AppContext);
-    const [questions, setQuestions] = useState([]);
-    const [answers, setAnswers] = useState<Answer[]|null>(null);
+    const [questions, setQuestions] = useState<Question[]>([]);
+    const [answers, setAnswers] = useState<IAnswer[]|null>(null);
     const [results, setResults] = useState<Result[]|null>(null);
 
-    // 出題開始ボタンクリック時の処理
-    const startClicked = async (condition:Condition) => {
-        const conditionBody = JSON.stringify({condition: condition});
-        const res = await fetch(context.questionUrl,{
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: conditionBody
-        })
-        const jsonRes = await res.json();
-        const body = JSON.parse(jsonRes.body);
-        setQuestions(body.questions);
-    };
+    const events = {
+        // 出題開始ボタンクリック時の処理
+        startClicked: async (condition:object) => {
+            const qs = await fetchQuestions(condition);
+            setQuestions(qs);
+        },
+
+        // 続けるボタンクリック時の処理
+        continueClicked: () => {
+            setQuestions([]);
+            setAnswers(null);
+            setResults(null);
+        }
+    }
 
     useEffect(() => {
         if(!answers) return;
-        async function patchAnswers() {
-            const answerBody = JSON.stringify({answers: answers});
-            const res = await fetch(context.questionUrl, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: answerBody
-            });
-            const jsonRes = await res.json();
-            const body = JSON.parse(jsonRes.body);
-            setResults(body.results);
+        async function score() {
+            const results = await patchScore(answers as IAnswer[]);
+            setResults(results);
         }
-        patchAnswers();
-    }, [answers, context.questionUrl]);
+        score();
+    }, [answers]);
 
-    const finished = (ans: Answer[]) => {setAnswers(ans);};
-
-    const continueClicked = () => {
-        setQuestions([]);
-        setAnswers(null);
-        setResults(null);
-    }
+    const finished = (ans: object[]) => {setAnswers(ans as IAnswer[]);};
 
     // 問題データが無いときは条件入力画面を表示
     // 全回答結果があるときは結果表示画面を表示
@@ -72,7 +62,7 @@ export default function Start() {
     switch(state) {
         // 出題条件入力画面
         case State.CONDITION:
-            return <ConditionView startClicked={startClicked} />;
+            return <ConditionView startClicked={events.startClicked} />;
 
         // 問題出題画面
         case State.QUESTION:
@@ -80,6 +70,6 @@ export default function Start() {
 
         // 結果表示画面
         case State.RESULT:
-            return <ResultView results={results} continueClicked={continueClicked}/>
+            return <ResultView results={results} continueClicked={events.continueClicked}/>
     }
 }

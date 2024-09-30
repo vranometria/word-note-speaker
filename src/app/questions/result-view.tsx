@@ -57,7 +57,7 @@ const ResultView: React.FC<ResultViewProps> = ({results, continueClicked}) => {
                 </table>
                     
                 <div className="text-right w-full">
-                    <button className="common-button p-5 w-full" onClick={clickedContine}>Continue</button>
+                    <a className="btn41-43 btn-41 text-center rounded w-full" onClick={clickedContine}>Continue</a>
                 </div>
 
                 <div className="back">

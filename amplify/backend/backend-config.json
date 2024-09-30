@@ -66,13 +66,50 @@
   "function": {
     "question": {
       "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "tag"
+        },
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "words"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     },
     "tag": {
       "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn",
+            "StreamArn"
+          ],
+          "category": "storage",
+          "resourceName": "tag"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "providerPlugin": "awscloudformation",
+      "service": "S3AndCloudFront"
     }
   },
   "parameters": {
@@ -85,6 +122,14 @@
       ]
     },
     "AMPLIFY_function_question_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "question"
+        }
+      ]
+    },
+    "AMPLIFY_function_question_tableName": {
       "usedBy": [
         {
           "category": "function",
@@ -107,6 +152,24 @@
           "resourceName": "tag"
         }
       ]
+    },
+    "AMPLIFY_function_tag_tableName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "tag"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "tag": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
+    },
+    "words": {
+      "providerPlugin": "awscloudformation",
+      "service": "DynamoDB"
     }
   }
 }

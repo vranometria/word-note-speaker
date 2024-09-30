@@ -1,3 +1,27 @@
 {
-  "lambdaLayers": []
+  "lambdaLayers": [
+    {
+      "type": "ExternalLayer",
+      "arn": "arn:aws:lambda:ap-northeast-1:981083441268:layer:google-gemini-python:2"
+    }
+  ],
+  "permissions": {
+    "storage": {
+      "tag": [
+        "read"
+      ],
+      "words": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    }
+  },
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "tableName",
+      "environmentVariableName": "TABLE_NAME"
+    }
+  ]
 }

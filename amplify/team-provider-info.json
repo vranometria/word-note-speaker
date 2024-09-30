@@ -19,16 +19,25 @@
       "function": {
         "question": {
           "deploymentBucketName": "amplify-wordnotespeaker-dev-bb0b6-deployment",
-          "s3Key": "amplify-builds/question-3967757a644d7330395a-build.zip"
+          "s3Key": "amplify-builds/question-4d6d776941674472462b-build.zip",
+          "tableName": "words-dev"
         },
         "tag": {
           "deploymentBucketName": "amplify-wordnotespeaker-dev-bb0b6-deployment",
-          "s3Key": "amplify-builds/tag-71647455762f726c4462-build.zip"
+          "s3Key": "amplify-builds/tag-4c737632706a694e5255-build.zip",
+          "tableName": "tag-dev"
         }
       },
       "api": {
         "words": {},
         "tag": {}
+      },
+      "hosting": {
+        "S3AndCloudFront": {}
+      },
+      "storage": {
+        "tag": {},
+        "words": {}
       }
     }
   }

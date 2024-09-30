@@ -2,6 +2,6 @@
 import { createContext } from "react";
 
 export const AppContext = createContext({
-    questionUrl: "http://localhost:9000/questions",
-    tagUrl: "http://localhost:9000/tags",
+    questionUrl: process.env.NEXT_PUBLIC_QUESTION_ENDPOINT as string,
+    tagUrl: process.env.NEXT_PUBLIC_TAG_ENDPOINT as string, 
 });

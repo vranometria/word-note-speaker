@@ -1,15 +1,20 @@
-// 問題登録画面
 "use client";
-import { useContext, useEffect, useState } from "react"
-import { AppContext } from "../AppContext"
-import styles from "./page.module.css";
+import { useEffect, useState } from "react"
 import Link from "next/link";
-import TagView from "../parts/tag-view";
-import { Tag } from "../types/tag";
-import { bindClasses } from "../util";
+import toast, { Toaster } from "react-hot-toast";
 
+import styles from "./page.module.css";
+
+import TagView from "../parts/tag-view";
+import Tag from "../types/tag";
+import { bindClasses } from "../util";
+import { fetchTags, registerQuestion } from "../apis";
+
+/**
+ * 問題登録画面
+ * @returns 
+ */
 export default function Register() {
-    const context = useContext(AppContext);
     const [english, setEnglish] = useState("");
     const [japanese, setJapanese] = useState("");
     const [tagIds, setTagIds] = useState<string[]>([]);
@@ -26,45 +31,48 @@ export default function Register() {
         setJapanese("");
     }
 
-    // formはsubmit時の送信禁止
-    const submit = (event: React.FormEvent<HTMLFormElement>) => {event.preventDefault();};
-
-    // english入力イベント
-    const inputEnglish = (event: React.ChangeEvent<HTMLInputElement>) => {
-        // 英数記号のみ入力可
-        const value = event.target.value;
-        if(value.match(/^[a-zA-Z0-9.,!? ]*$/)){
-            setEnglish(value);
+    const events = {
+        // english入力イベント
+        inputEnglish: (event: React.ChangeEvent<HTMLInputElement>) => {
+            // 英数記号のみ入力可
+            const value = event.target.value;
+            if(value.match(/^[a-zA-Z0-9.,!? ]*$/)){
+                setEnglish(value);
+            }
+        },
+        // registerクリックイベント
+        registerClicked: async () => {
+            const [isEnglishError, isJapaneseError] = checkInput(english, japanese);
+            if(isEnglishError){
+                setEnglishErr(styles.error);
+            }
+            if(isJapaneseError){
+                setJapaneseErr(styles.error);
+            }
+            const isNoError = !isEnglishError && !isJapaneseError;
+            if(isNoError){
+                const promise = registerQuestion(english, japanese, tagIds);
+                toast.promise(
+                    promise,
+                    {
+                       loading: 'Saving...',
+                       success: <b>Settings saved!</b>,
+                       error: <b>Could not save.</b>,
+                    }
+                );
+                const isSuccess = await promise;
+                if(isSuccess){
+                    clear();
+                }
+            }
         }
-    };
-
-    // registerクリックイベント
-    const clickedRegister = () => {
-        const [isEnglishError, isJapaneseError] = checkInput(english, japanese);
-        if(isEnglishError){
-            setEnglishErr(styles.error);
-        }
-        if(isJapaneseError){
-            setJapaneseErr(styles.error);
-        }
-        const success = !isEnglishError && !isJapaneseError;
-        if(success){
-            doRegister(context.questionUrl, english, japanese, tagIds)
-            clear();
-        }
-    };
+    }
 
     // タグデータの取得
     useEffect(()=>{
         async function fetchData(){
-        const res = await fetch(context.tagUrl);
-        const json = await res.json();
-        const body = JSON.parse(json.body);
-        const ts = body.map((x:Tag) => {
-            const t: Tag = {id: x.id, label: x.label};
-            return t;
-        });
-        setTags(ts);
+            const ts = await fetchTags();
+            setTags(ts);
         };
         fetchData();
     }, []);
@@ -73,29 +81,29 @@ export default function Register() {
         <div className="page-root">
             <main className="contents">
                 <h1 className="text-center pb-20 w-full">Question Registeration</h1>
-                <form onSubmit={submit}>
-                    <div className={styles.row}>
+                <div className="table">
+                    <div className="table-row">
                         <div className={styles.label}>
                             English word
                         </div>
                         <div className={styles.input}>
-                            <input type="text" value={english} className={classes(styles.in, englishErr)} onChange={ (e)=>{inputEnglish(e);} }/>
+                            <input type="text" value={english} className={bindClasses(styles.in, englishErr)} onChange={ (e)=>{events.inputEnglish(e);} }/>
                         </div>
                     </div>            
-                    <div className={styles.row}>
+                    <div className="table-row">
                         <div className={styles.label}>
                             Japanese meaning
                         </div>
-                        <div>
-                            <input type="text" value={japanese} className={classes(styles.in, japaneseErr)} onChange={(e)=>{setJapanese(e.target.value)}} />
+                        <div className="table-cell">
+                            <input type="text" value={japanese} className={bindClasses(styles.in, japaneseErr)} onChange={(e)=>{setJapanese(e.target.value)}} />
                         </div> 
                     </div>
                     
-                    <div className={styles.row}>
+                    <div className="table-row">
                         <div className={styles.label}>
                             Tags
                         </div>
-                        <div className={bindClasses("tag-container", "pt-5 pb-5")}>
+                        <div className="tag-container pt-5 pb-5 table-cell">
                             {
                                 tags.map( (tag:Tag, index:number) => {
                                     const selected = (id:string) => {
@@ -107,25 +115,24 @@ export default function Register() {
                                         }
                                     }
                                     return <TagView key={index} tag={tag} isSelected={tagIds.includes(tag.id)} selected={selected} />
-                                } )
+                                })
                             }
                         </div>
                     </div>
-                    <div className={bindClasses(styles.register_button, "common-button")}>
-                        <button onClick={ ()=>{clickedRegister()}}>Register</button>
-                    </div>
-                    <div className="back">
-                        <Link href="/">
-                            <button>Back</button>
-                        </Link>
-                    </div>
-                </form>
+                </div>
+                <div className={bindClasses(styles.register_button, "w-full")}>
+                    <a className="btn41-43 btn-41 w-full text-center rounded" onClick={events.registerClicked}>Register</a>
+                </div>
+                <div className="back">
+                    <Link href="/">
+                        <button>Back</button>
+                    </Link>
+                </div>
+                <div><Toaster/></div>
             </main>
         </div>
     );
 }
-
-const classes = (...clses:string[]) => clses.join(" ");
 
 /**
  * 入力チェック
@@ -148,37 +155,4 @@ const checkInput = (english: string, japanese: string) => {
     }
 
     return [isEnglishError, isJapaneseError]
-}
-
-/**
- * 登録処理
- * @param url 
- * @param english 
- * @param japanese 
- * @param tags 
- */
-const doRegister = async (url: string, english: string, japanese: string, tags: string[]) => {
-    const body:string = JSON.stringify({
-        english: english,
-        japanese: japanese,
-        tags: tags,
-    });
-
-    try {
-        const response = await fetch(url, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: body
-        });
-    
-        if(response.ok){
-            alert("Registered");
-        } else {
-            alert("Failed to register");
-        }
-    }
-    catch(e) {
-        const exception = e as Error;
-        alert(exception.message);
-    };
 }

@@ -2,15 +2,6 @@
     width: 500px;
 }
 
-.form {
-    width: 500px;
-    display: table;
-}
-
-.row {
-    display: table-row;
-}
-
 .label {
     width: 300px;
     display: table-cell;

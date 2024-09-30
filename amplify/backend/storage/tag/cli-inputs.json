@@ -1,0 +1,10 @@
+{
+  "resourceName": "tag",
+  "tableName": "tag",
+  "partitionKey": {
+    "fieldName": "id",
+    "fieldType": "string"
+  },
+  "gsi": [],
+  "triggerFunctions": []
+}

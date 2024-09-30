@@ -1,7 +1,7 @@
 
 // 削除可タグボタン
 "use client";
-import {Tag} from "../types/tag";
+import Tag from "../types/tag";
 import TagView from "./tag-view";
 
 interface TagViewProps {
