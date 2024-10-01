@@ -178,12 +178,22 @@ export async function patchScore(answers: IAnswer[]): Promise<Result[]> {
     return results;
 }
 
+/**
+ * APIコールのインターフェース
+ */
 export interface IApi {
     registerQuestion: (english: string, japanese: string, tags: string[]) => Promise<boolean>;
+
+    fetchQuestionList: () => Promise<Question[]>;
 }
 
+/**
+ * APIコールで開発環境と本番環境で共通にしたい部分を実装するクラス
+ */
 abstract class AbstractApi implements IApi {
     abstract registerQuestion: (english: string, japanese: string, tags: string[]) => Promise<boolean>;
+
+    abstract fetchQuestionList: () => Promise<Question[]>;
     
     getRegisterQuestionBody = (english: string, japanese: string, tags: string[]) => {
         return {
@@ -194,8 +204,26 @@ abstract class AbstractApi implements IApi {
     }
 }
 
+interface IFetchQuestionListBody {
+    questions: Question[];
+}
 
+/**
+ * 本番用API呼び出し
+ */
 class ProductionApi extends AbstractApi {
+    async getBody<T>(operation): Promise<T|null>{
+        const { body } = await operation.response;
+        const res = await body.text();
+        if(res){
+            const json = JSON.parse(res);
+            return json.body;
+        }
+        else {
+            return null;
+        }
+    }
+
     /**
      * 問題登録
      * @param english 英語
@@ -223,8 +251,29 @@ class ProductionApi extends AbstractApi {
             return false;
         };
     }
+
+    fetchQuestionList = async (): Promise<Question[]> => {
+        try {
+            const operation = get({apiName: 'words', path: '/questions'});
+            const body = await this.getBody<IFetchQuestionListBody>(operation);
+            if(body){
+                const questions: Question[] = body.questions;
+                return questions;
+            } else {
+                alert("Failed to fetch questions");
+                return [];
+            }
+        }
+        catch(e) { 
+            error(e);
+            return [];
+        };
+    }
 }
 
+/**
+ * 開発環境用API呼び出し
+ */
 class DevelopmentApi extends AbstractApi {
     registerQuestion = async (english: string, japanese: string, tags: string[]): Promise<boolean> =>  {
         try {
@@ -244,6 +293,31 @@ class DevelopmentApi extends AbstractApi {
         catch(e) { 
             error(e);
             return false;
+        };
+    }
+
+    /**
+     * 問題一覧(開発用)
+     * @returns 
+     */
+    fetchQuestionList = async (): Promise<Question[]> => {
+        try {
+            const url = `${process.env.NEXT_PUBLIC_QUESTION_ENDPOINT}`;
+            const res = await fetch(url);
+            if(res.status === 200){
+                const jsonRes = await res.json();
+                const body = JSON.parse(jsonRes.body);
+                const questions: Question[] = body.questions;
+                console.log(body);
+                return questions;
+            } else {
+                alert("Failed to fetch questions");
+                return [];
+            }
+        }
+        catch(e) { 
+            error(e);
+            return [];
         };
     }
 }

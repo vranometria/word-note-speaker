@@ -38,6 +38,8 @@ def handler(event, context):
         # patchメソッドの時は正答率を計算する
         answers = list(map(lambda d: Answer(d), body["answers"]))
         return calculate_score(answers)
+    elif action == "GET":
+        return get_all_data()
 
     res = SuccessResponse(body={"message":"no work"})
     return res.to_dict()
@@ -90,6 +92,15 @@ def get_data(condition:Condition):
     body = {"questions": questions}
     return SuccessResponse(body=body).to_dict()
 
+def get_all_data():
+    """
+    全てのデータを取得する
+    """
+    response = table.scan()
+    items = response['Items']
+    body = {"questions": items}
+    print(items)
+    return SuccessResponse(body=body).to_dict()
 
 def createQuestion(item):
     """

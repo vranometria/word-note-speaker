@@ -12,6 +12,9 @@ export default function Home() {
         <a className={"common-button"}>
           <Link href="/tags">Edit Tags</Link>
         </a>
+        <a className={"common-button"}>
+          <Link href="/question-list">Question List</Link>
+        </a>
         <a className={bindClasses("common-button","mt-10")}>
           <Link href="/questions">Training Start</Link>
         </a>
