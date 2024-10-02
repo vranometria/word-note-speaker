@@ -200,3 +200,8 @@ body {
   top: 2px;
 }
 /* ボタンアニメーション(btn41-43 btn-41) ↑ */
+
+.header {
+  display: grid;
+  grid-template-columns: 70% 30%;
+}

@@ -28,6 +28,7 @@ const geistMono = localFont({
 
 import React from 'react'
 import '@aws-amplify/ui-react/styles.css';
+import Header from "@/app/parts/header";
 
 // App.jsに相当
 export default function RootLayout({children, }: Readonly<{children: React.ReactNode;}>) {
@@ -35,6 +36,7 @@ export default function RootLayout({children, }: Readonly<{children: React.React
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Authenticator>
+          <Header />
           {children}
         </Authenticator>
       </body>
