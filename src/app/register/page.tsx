@@ -5,10 +5,10 @@ import toast, { Toaster } from "react-hot-toast";
 
 import styles from "./page.module.css";
 
-import TagView from "../parts/tag-view";
-import Tag from "../types/tag";
 import { bindClasses } from "../util";
 import { fetchTags, registerQuestion } from "../apis";
+import TagContainer from "../parts/tag-container";
+import Tag from "../types/tag";
 
 /**
  * 問題登録画面
@@ -21,6 +21,17 @@ export default function Register() {
     const [englishErr, setEnglishErr] = useState("");
     const [japaneseErr, setJapaneseErr] = useState("");
     const [tags, setTags] = useState<Tag[]>([]);
+    const [isLoading, setLoading] = useState<boolean>(true);
+
+    // タグデータの取得
+    useEffect(()=>{
+        async function fetchData(){
+            const ts = await fetchTags();
+            setTags(ts);
+            setLoading(false);
+        };
+        fetchData();
+    }, []);
 
      // 画面を初期化
      const clear = () => {
@@ -65,17 +76,9 @@ export default function Register() {
                     clear();
                 }
             }
-        }
+        },
     }
 
-    // タグデータの取得
-    useEffect(()=>{
-        async function fetchData(){
-            const ts = await fetchTags();
-            setTags(ts);
-        };
-        fetchData();
-    }, []);
 
     return(
         <div className="page-root">
@@ -103,20 +106,8 @@ export default function Register() {
                         <div className={styles.label}>
                             Tags
                         </div>
-                        <div className="tag-container pt-5 pb-5 table-cell">
-                            {
-                                tags.map( (tag:Tag, index:number) => {
-                                    const selected = (id:string) => {
-                                        if(tagIds.some(x => id === x)){
-                                            setTagIds(tagIds.filter(x => x !== id));
-                                        }
-                                        else{
-                                            setTagIds([...tagIds, id]);
-                                        }
-                                    }
-                                    return <TagView key={index} tag={tag} isSelected={tagIds.includes(tag.id)} selected={selected} />
-                                })
-                            }
+                        <div className="pt-5 pb-5 table-cell">
+                            <TagContainer tags={tags} tagSelected={setTagIds} isLoading={isLoading} />
                         </div>
                     </div>
                 </div>

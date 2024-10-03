@@ -6,6 +6,7 @@ import Tag from "@/app/types/tag";
 
 import TagView from "@/app/parts/tag-view";
 import { fetchTags } from "../apis";
+import TagContainer from "../parts/tag-container";
 
 /**
  * props型定義
@@ -28,12 +29,14 @@ const ConditionView: React.FC<ConditionViewProps> = ({startClicked}) => {
     const [tags, setTags] = useState<Tag[]>([]);
     const [tagIds, setTagIds] = useState<string[]>([]);
     const [numberOfQuestions, setNumberOfQuestions] = useState<number>(5);
+    const [isLoading, setLoading] = useState<boolean>(true);
 
      // タグデータの取得
      useEffect(()=>{
         async function fetchData(){
             const ts = await fetchTags();
             setTags(ts);
+            setLoading(false);
         };
         fetchData();
     }, []);
@@ -74,22 +77,7 @@ const ConditionView: React.FC<ConditionViewProps> = ({startClicked}) => {
                     </div>
                     <div className="table-row">
                         <label className="table-cell pr-10 py-6 text-right">Tags</label>
-                        <div className="tag-container">
-                            {
-                                tags.map( (tag:Tag, index:number) => {
-                                    const selected = (id:string) => {
-                                        if(tagIds.includes(id)) {
-                                            setTagIds(tagIds.filter((tagId:string) => id !== tagId));
-                                        }
-                                        else {
-                                            setTagIds([...tagIds, id]);
-                                        }
-                                    };
-                                    const isSelected = tagIds.includes(tag.id);
-                                    return <TagView key={index} tag={tag} isSelected={isSelected} selected={selected}/>    
-                                })
-                            }
-                        </div>
+                        <TagContainer tags={tags} tagSelected={setTagIds} isLoading={isLoading} />
                     </div>
                 </div>
                 <div className="w-full mt-20">

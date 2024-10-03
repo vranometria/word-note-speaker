@@ -1,15 +1,15 @@
 // タグ編集画面
 "use client";
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 
 import style from "./page.module.css";
 
-import DeletableTagView from "../parts/deletable-tag-view";
 import { bindClasses } from "../util";
-import Tag from "../types/tag";
-import { fetchTags, putTag, deleteTag } from "../apis";
+import Tag from "@/app/types/tag";
+import TagContainer from "@/app/parts/tag-container";
+import { fetchTags, putTag } from "@/app/apis";
 
 /**
  * タグ編集画面
@@ -19,7 +19,18 @@ export default function Tags() {
     const [label, setTag] = useState<string>("");
     const [id, setId] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const [isLoading, setLoading] = useState<boolean>(true);
     const [tags, setTags] = useState<Tag[]>([]);
+
+    // タグデータの取得
+    useEffect(()=>{
+        async function fetchData(){
+            const ts = await fetchTags();
+            setTags(ts);
+            setLoading(false);
+        };
+        fetchData();
+    }, []);
 
     // 画面初期化関数
     const clear = () => {
@@ -58,33 +69,18 @@ export default function Tags() {
                 clear();
             }
         },
-
-        // タグ削除ボタンクリックイベント 
-        deleteTagClicked: async (id:string) => {
-            const isSuccess = await deleteTag(id);
-            if(isSuccess){
-                const ts = tags.filter(x => x.id !== id);
-                setTags(ts);
-            }
-        }
     }
 
-     // タグ情報をすべて取得
-    useEffect(()=>{
-        async function fetchData(){
-            const ts = await fetchTags();
-            setTags(ts);
-        };
-        fetchData();
-    }, []);
-
+    const tagDeleted = (deletedId: string) => {
+        setTags(tags.filter(x => x.id !== deletedId));
+    }
 
     return (
         <div className="page-root">
             <main className="contents">
-                <h1 className="page-title">Tag Edit</h1>
-
-                <form onSubmit={(e)=>{e.preventDefault();}} >
+                <h1 className="page-title">Tag Edit</h1> 
+                {/* Enterで登録できる様にformにする */}             
+                <form onSubmit={(e)=>{e.preventDefault();}} > 
                     <div className="flex">
                         <label className="pr-10 mt-4">Tag Name</label>
                         <input type="hidden" name="id" value={id}/>
@@ -96,10 +92,8 @@ export default function Tags() {
                 <div className="mt-20">
                     <div>
                         <h2>Tags</h2>
-                        <div className="tag-container">
-                            {tags.map((x:Tag) => {
-                                return <DeletableTagView key={x.id} tag={x} isSelected={false} selected={()=>{}} deleted={()=>{events.deleteTagClicked(x.id)}}></DeletableTagView>;
-                            })}
+                        <div className="pl-10">
+                            <TagContainer tags={tags} tagSelected={()=>{}} isDeletable={true} isLoading={isLoading} tagDeleted={tagDeleted}/>
                         </div>
                     </div>
                 </div>
